@@ -6,10 +6,10 @@ from src import config
 def convert_pixel_to_coordinates(
     loc_x: int,
     loc_y: int,
-    min_lat: int = -40,
-    max_lat: int = 40,
-    min_lon: int = -20,
-    max_lon: int = 55,
+    min_lat: int = -37.1,
+    max_lat: int = 40.1,
+    min_lon: int = -20.1,
+    max_lon: int = 54.1,
 ):
     """Convert pixels to coordinates.
 
