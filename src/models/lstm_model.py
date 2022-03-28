@@ -13,10 +13,12 @@ from src.models.base_model import BasePredictionModel
 class LSTMPredictionModel(BasePredictionModel):
     """LSTM Model."""
 
-    def __init__(self) -> None:
+    def __init__(self, epochs: int = 10, batch_size: int = 32) -> None:
         """Init."""
         super().__init__()
         self.input_size = 1
+        self.epochs = epochs
+        self.batch_size = 32
 
     def fit(
         self,
@@ -25,8 +27,6 @@ class LSTMPredictionModel(BasePredictionModel):
         y_train: np.ndarray,
         X_val: np.ndarray,
         y_val: np.ndarray,
-        epochs: int = 10,
-        batch_size: int = 32,
         plot_history: bool = False
     ) -> None:
         """Fit the model."""
@@ -42,8 +42,8 @@ class LSTMPredictionModel(BasePredictionModel):
             X_train,
             y_train,
             validation_data=(X_val, y_val),
-            epochs=epochs,
-            batch_size=batch_size,
+            epochs=self.epochs,
+            batch_size=self.batch_size,
             verbose=2,
             callbacks=[
                 tf.keras.callbacks.EarlyStopping(
@@ -60,7 +60,9 @@ class LSTMPredictionModel(BasePredictionModel):
         self.logger.info("Model fitted.")
         if plot_history:
             plt.plot(history.epoch, history.history["loss"], label="Training loss")
-            plt.plot(history.epoch, history.history["val_loss"], label="Validation loss")
+            plt.plot(
+                history.epoch, history.history["val_loss"], label="Validation loss"
+            )
 
             plt.legend()
             plt.show()

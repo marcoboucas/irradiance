@@ -1,0 +1,21 @@
+models:
+  #base-lstm:
+  #  class_path: lstm_model.LSTMPredictionModel
+  base-arima:
+    class_path: arima_model.ArimaPredictionModel
+dataset:
+  data_path: ./data
+  train_year: 2020
+  val_year: 2019
+  test_year: 2018
+  shift: 512
+  make_diff: False
+  add_is_day: False
+  locations:
+    - x: 200
+      y: 200
+evaluation:
+  evaluators:
+    - mse.MSE
+  how_many: 288
+  max_per_model: 3
