@@ -18,7 +18,7 @@ class LSTMPredictionModel(BasePredictionModel):
         super().__init__()
         self.input_size = 1
         self.epochs = epochs
-        self.batch_size = 32
+        self.batch_size = batch_size
 
     def fit(
         self,
@@ -50,7 +50,7 @@ class LSTMPredictionModel(BasePredictionModel):
                     monitor="val_loss",
                     min_delta=0,
                     patience=2,
-                    verbose=0,
+                    verbose=2,
                     mode="auto",
                     baseline=None,
                     restore_best_weights=False,
@@ -85,8 +85,8 @@ class LSTMPredictionModel(BasePredictionModel):
         self, initial_values: np.ndarray, how_many: int = 400, verbose: bool = False
     ) -> np.ndarray:
         """Predict."""
-        x_final = np.zeros((1, how_many))
+        x_final = np.zeros((1, how_many+self.input_size))
         x_final[0, : self.input_size] = initial_values[-self.input_size :]
-        for i in tqdm(range(self.input_size, how_many), disable=not verbose):
+        for i in tqdm(range(self.input_size, how_many+self.input_size), disable=not verbose):
             x_final[0, i] = self.model.predict(x_final[:, i - self.input_size : i])
         return x_final[0]
