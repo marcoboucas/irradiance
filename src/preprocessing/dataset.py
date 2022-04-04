@@ -1,6 +1,7 @@
 """Timeseries dataset."""
 
 import logging
+from typing import Optional
 
 import pandas as pd
 import numpy as np
@@ -14,20 +15,18 @@ def get_is_day(
     time_day: int = 96,
 ):
     """Get if the sun is up or not."""
-    return np.array(
-        [
+    return pd.Series([
             1.0 if start_day < ((step - shift) % time_day) < end_day else 0.0
             for step in range(size)
-        ]
-    )
+        ]).shift(shift).dropna().to_numpy()
+
 
 
 def generate_dataset(
     data: np.ndarray,
     shift=20,
     make_diff: bool = True,
-    add_is_day: bool = False,
-    remove_some_0: bool = False
+    remove_some_0: bool = True
 ):
     """Generate a dataset for time series models."""
     df_data = pd.Series(data) / 255
@@ -45,8 +44,6 @@ def generate_dataset(
             "Y": diff_data.shift(shift),
         }
     )
-    if add_is_day:
-        DATA["is_day"] = get_is_day(len(diff_data), shift=shift)
 
     DATA = DATA.dropna()
 
@@ -56,9 +53,10 @@ def generate_dataset(
     dataset_X, dataset_Y = features.values, labels.values
 
     if remove_some_0:
-        indexes = (dataset_Y == 0) * (np.random.random(dataset_Y.shape) > 0.1)
-        dataset_X = dataset_X[~indexes]
-        dataset_Y = dataset_Y[~indexes]
+        indexes = ~((dataset_Y == 0) * (np.random.random(dataset_Y.shape) > 0.1))
+        dataset_X = dataset_X[indexes]
+        dataset_Y = dataset_Y[indexes]
+    else:
+        indexes = None
 
-
-    return dataset_X, dataset_Y
+    return dataset_X, dataset_Y, indexes
